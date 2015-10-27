@@ -1,0 +1,107 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:2:1-53:12
+	xmlns:android
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:2:11-69
+	package
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:3:5-41
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:5:5-81
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:5:22-78
+uses-permission#android.permission.WRITE_INTERNAL_STORAGE
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:6:5-81
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:6:22-78
+uses-permission#android.permission.INTERNET
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:7:5-67
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:7:22-64
+uses-permission#android.permission.BLUETOOTH
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:8:5-68
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:8:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:9:5-73
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:9:22-71
+application
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:12:5-51:19
+MERGED from [com.android.support:appcompat-v7:21.0.2] C:\PST\Test\PhoneSense\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.2\AndroidManifest.xml:16:5-19
+MERGED from [com.android.support:support-v4:21.0.2] C:\PST\Test\PhoneSense\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.2\AndroidManifest.xml:16:5-19
+	android:label
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:15:9-41
+	android:allowBackup
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:13:9-35
+	android:icon
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:14:9-45
+	android:theme
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:16:9-40
+activity#com.probisticktechnologies.PhoneSense.PhoneSensorDataCapture
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:17:9-24:20
+	android:screenOrientation
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:20:13-49
+	android:label
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:19:13-45
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:18:13-62
+intent-filter#android.intent.action.MAIN
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:21:13-23:29
+action#android.intent.action.MAIN
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:22:17-69
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:22:25-66
+activity#com.probisticktechnologies.PhoneSense.HomeScreenActivity
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:27:9-35:20
+	android:label
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:29:13-45
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:28:13-58
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:30:13-34:29
+category#android.intent.category.LAUNCHER
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:33:17-77
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:33:27-74
+activity#com.probisticktechnologies.bluetoothchat.MainActivity
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:37:9-42:20
+	android:label
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:40:13-45
+	android:configChanges
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:39:13-63
+	android:theme
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:41:13-53
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:38:13-81
+activity#com.probisticktechnologies.bluetoothchat.DeviceListActivity
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:44:9-48:63
+	android:label
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:47:13-50
+	android:configChanges
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:46:13-63
+	android:theme
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:48:13-61
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:45:13-87
+service#com.probisticktechnologies.PhoneSense.SensorService
+ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:50:9-60
+	android:name
+		ADDED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml:50:18-58
+uses-sdk
+INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+MERGED from [com.android.support:appcompat-v7:21.0.2] C:\PST\Test\PhoneSense\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.2\AndroidManifest.xml:15:5-42
+MERGED from [com.android.support:support-v4:21.0.2] C:\PST\Test\PhoneSense\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.2\AndroidManifest.xml:15:5-42
+	android:targetSdkVersion
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml
+		INJECTED from C:\PST\Test\PhoneSense\app\src\main\AndroidManifest.xml

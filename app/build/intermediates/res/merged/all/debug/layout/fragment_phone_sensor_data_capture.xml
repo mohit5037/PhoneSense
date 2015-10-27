@@ -1,0 +1,222 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity$PlaceholderFragment">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView android:text="@string/app_header" android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+            android:id="@+id/app_header_text"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:textColor="@color/light_blue"
+            android:layout_weight="3" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="4">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Accelerometer"
+                    android:id="@+id/textView"
+                    android:textSize="20dp"
+                    android:layout_gravity="left"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Not Present"
+                    android:id="@+id/accelerometer_availability_status"
+                    android:textSize="20dp"
+                    android:layout_gravity="right"
+                    android:gravity="right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gyroscope"
+                    android:id="@+id/textView2"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Not Present"
+                    android:id="@+id/gyroscope_availability_status"
+                    android:textSize="20dp"
+                    android:gravity="right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Magnetometer"
+                    android:id="@+id/textView3"
+                    android:textSize="20dp"
+                    android:layout_gravity="right"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Not Present"
+                    android:id="@+id/magenetometer_availability_status"
+                    android:textSize="20dp"
+                    android:gravity="right" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="4"
+            android:id="@+id/settings_linear_layout">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Capture Speed"
+                android:id="@+id/textView4"
+                android:textSize="25dp"
+                android:textStyle="bold|italic"
+                android:gravity="center_horizontal" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="0"
+                android:layout_marginTop="10dp"
+                android:id="@+id/capture_speed_radio_group">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fastest"
+                    android:id="@+id/fast_record_radio_button"
+                    android:checked="false"
+                    android:layout_weight="1"
+                    android:textSize="20dp" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Medium"
+                    android:id="@+id/medium_record_radio_button"
+                    android:checked="false"
+                    android:layout_weight="1"
+                    android:textSize="20dp" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Normal"
+                    android:id="@+id/normal_record_radio_button"
+                    android:checked="true"
+                    android:layout_weight="1"
+                    android:textSize="20dp" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Data Storage Mode"
+                android:id="@+id/textView5"
+                android:textSize="25dp"
+                android:textStyle="bold|italic"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="20dp" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="0"
+                android:layout_marginTop="10dp"
+                android:id="@+id/data_storage_mode_radioGroup" >
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Write to File"
+                    android:id="@+id/write_to_file_radioButton"
+                    android:checked="true"
+                    android:layout_weight="1"
+                    android:textSize="20dp" />
+
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Send via Bluetooth"
+                    android:id="@+id/send_via_bluetooth_radioButton"
+                    android:checked="false"
+                    android:layout_weight="1"
+                    android:textSize="20dp" />
+            </RadioGroup>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start"
+                android:id="@+id/start_record_button"
+                android:layout_gravity="left|bottom"
+                android:layout_weight="1"
+                android:nestedScrollingEnabled="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stop"
+                android:id="@+id/stop_record_button"
+                android:layout_gravity="right|bottom"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>
+<!-- From: file:/C:/PST/Test/PhoneSense/app/src/main/res/layout/fragment_phone_sensor_data_capture.xml -->
