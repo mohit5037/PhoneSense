@@ -62,8 +62,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
         // List of possible applications
         private String[] applicationNames = new String[]{
-                "Phone Sensor Data Capture",
-                "Bluetooth Chat"
+                "Phone Sensor Data Capture"
         };
 
         public ChooseApplicationFragment() {

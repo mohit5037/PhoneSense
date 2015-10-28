@@ -1,13 +1,16 @@
 package com.probisticktechnologies.PhoneSense;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.hardware.camera2.params.BlackLevelPattern;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +38,8 @@ import java.util.Map;
  */
 public class PhoneSensorDataCaptureFragment extends Fragment {
 
+    private static final String TAG = "PhoneSensorDataCaptureFragment";
+
     // Declaring Buttons
     private Button startRecord;
     private Button stopRecord;
@@ -42,20 +47,8 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     // Capture Speed Radio Group
     private RadioGroup captureSpeed;
 
-    // Data storage mode Radio Group
-    private RadioGroup dataStorageMode;
-
-
-
-    // Sensor Delay
-    public static int SENSOR_DELAY = SensorManager.SENSOR_DELAY_NORMAL;
-
-    // Data Storage Mode
-    public static final int WRITE_TO_FILE = 1;
-    public static final int SEND_VIA_BLUETOOTH = 2;
-    public static int DATA_STORAGE_MODE = WRITE_TO_FILE;
-
-
+    // Sensor Delay default value
+    public static int SENSOR_DELAY = SensorManager.SENSOR_DELAY_UI;
 
     // File in which data is to be stored
     private String FILENAME;
@@ -77,7 +70,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     // Map to hold sensors available on device
     public static Map<String, Sensor> deviceSensors = new HashMap<String, Sensor>();
 
-    // Map to hold sensors to search on device
+    // Map to hold sensors to search on device (In our case Accelo, gyro and magneto)
     public static Map<String, Integer> sensorIds = new HashMap<String, Integer>();
 
     // Sensor Manager
@@ -86,12 +79,30 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     // Intent to launch Sensor Service
     Intent sensorServiceIntent;
 
-    // Initializing data structures
-    public  static ArrayList<ArrayList<Float>> masterData = new ArrayList<>();
-    public  static ArrayList<Long> masterDataTimestamp = new ArrayList<>();
+    // Bluetooth adapter
+    private BluetoothAdapter mBluetoothAdapter;
+
+    // Handler to communicate with Bluetooth Service
+    private Handler mHandler;
+
+    // Declaring bluetooth service object
+    private BluetoothService mBluetoothService;
+
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    private static final int REQUEST_ENABLE_BT = 3;
+
+    // Declaring data structures to hold data for whole session
+    public  static ArrayList<ArrayList<Float>> masterData = new ArrayList<>(); // for sensor values
+    public  static ArrayList<Long> masterDataTimestamp = new ArrayList<>();  // for timestamps
 
     // Constructor
     public PhoneSensorDataCaptureFragment() {
+
+        // We are only interested in accelerometer, gyroscope and magnetometer sensor
+        sensorIds.put("Accelerometer", Sensor.TYPE_ACCELEROMETER);
+        sensorIds.put("Gyroscope", Sensor.TYPE_GYROSCOPE);
+        sensorIds.put("Magnetometer", Sensor.TYPE_MAGNETIC_FIELD);
     }
 
     @Override
@@ -109,11 +120,9 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
 
         // Getting the Radio Group
         captureSpeed = (RadioGroup) rootView.findViewById(R.id.capture_speed_radio_group);
-        dataStorageMode = (RadioGroup) rootView.findViewById(R.id.data_storage_mode_radioGroup);
-
 
         // Checking whether any sensor is present in the device of not and notifying user acc
-        if(deviceSensors.size()!=0){
+        if(deviceSensors.size()!= 0){
             if(deviceSensors.containsKey("Accelerometer")){
                 ((TextView) rootView.findViewById(R.id.accelerometer_availability_status)).setText("Present");
             }
@@ -143,7 +152,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
                 //v.setFocusableInTouchMode(false);
                 disableButton(startRecord);
                 disableRadioGroup(captureSpeed);
-                startRecording();
+                startCapturing();
             }
         });
 
@@ -152,7 +161,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
             public void onClick(View v) {
                 //v.setFocusableInTouchMode(false);
                 disableButton(stopRecord);
-                stopRecording(v);
+                stopCapturing(v);
             }
         });
 
@@ -176,44 +185,31 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
             }
         });
 
-        dataStorageMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
-                    case R.id.write_to_file_radioButton:
-                        DATA_STORAGE_MODE = WRITE_TO_FILE;
-                        break;
-                    case R.id.send_via_bluetooth_radioButton:
-                        DATA_STORAGE_MODE = SEND_VIA_BLUETOOTH;
-                        break;
-                    default:
-                        DATA_STORAGE_MODE = WRITE_TO_FILE;
-                }
-            }
-        });
-
-
-
         return rootView;
     }
 
+    /**
+     * Method to disable any view item, in this case a button
+     * @param button
+     */
     private void disableButton(View button) {
         button.setEnabled(false);
         button.setClickable(false);
     }
 
+    /**
+     * Method to enable any view item, in this case a button
+     * @param button
+     */
     private void enableButton(View button) {
         button.setEnabled(true);
         button.setClickable(true);
     }
 
-    // Finds the available sensors on device
+    /**
+     * Search for availability of required Sensors on the current device.
+     */
     private void findDeviceSensors() {
-
-        // We are only interested in accelerometer, gyroscope and magnetometer
-        sensorIds.put("Accelerometer", Sensor.TYPE_ACCELEROMETER);
-        sensorIds.put("Gyroscope", Sensor.TYPE_GYROSCOPE);
-        sensorIds.put("Magnetometer", Sensor.TYPE_MAGNETIC_FIELD);
 
         // Getting sensor manager
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -233,55 +229,110 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
 
     }
 
-    // When start recording button is clicked
-    private void startRecording() {
+    /**
+     * This method is called when user presses the start button in order to capture the motion data.
+     */
+    private void startCapturing() {
 
-        if(DATA_STORAGE_MODE == WRITE_TO_FILE) {
-            // Getting file name from user
-            PromptDialog dlg = new PromptDialog(getActivity(), "Please Enter file Name", "(In which data is to be stored)") {
-                @Override
-                public boolean onOkClicked(String input) {
+        // Make sure that bluetooth services are up and running
+        startBluetoothServices();
 
-                    // do something
-                    FILENAME = "PhoneSense" + '_' + input + '_' + (new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss'.csv'").format(new Date()));
-                    Toast.makeText(getActivity(), "Recording to " + FILENAME, Toast.LENGTH_SHORT).show();
+        // Setup Bluetooth Service if not already done
+        if(mBluetoothService == null){
+            setupBluetoothService();
+        }
 
-                    // Making an intent
-                    sensorServiceIntent = new Intent(getActivity(), SensorService.class);
 
-                    // Starting the service
-                    getActivity().startService(sensorServiceIntent);
 
-                    // making stop button enabled
-                    enableButton(stopRecord);
+//        if(DATA_STORAGE_MODE == WRITE_TO_FILE) {
+//            // Getting file name from user
+//            PromptDialog dlg = new PromptDialog(getActivity(), "Please Enter file Name", "(In which data is to be stored)") {
+//                @Override
+//                public boolean onOkClicked(String input) {
+//
+//                    // do something
+//                    FILENAME = "PhoneSense" + '_' + input + '_' + (new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss'.csv'").format(new Date()));
+//                    Toast.makeText(getActivity(), "Recording to " + FILENAME, Toast.LENGTH_SHORT).show();
+//
+//                    // Making an intent
+//                    sensorServiceIntent = new Intent(getActivity(), SensorService.class);
+//
+//                    // Starting the service
+//                    getActivity().startService(sensorServiceIntent);
+//
+//                    // making stop button enabled
+//                    enableButton(stopRecord);
+//
+//                    return true; // true = close dialog
+//                }
+//
+//                @Override
+//                public void onCancelClicked() {
+//                    enableButton(startRecord);
+//                    enableRadioGroup(captureSpeed);
+//                }
+//            };
+//            dlg.show();
+//        }else if(DATA_STORAGE_MODE == SEND_VIA_BLUETOOTH){
+//            // Notify user
+//            Toast.makeText(getActivity(), "Recording Data to be sent via bluetooth!!", Toast.LENGTH_SHORT).show();
+//
+//            // Making an intent
+//            sensorServiceIntent = new Intent(getActivity(), SensorService.class);
+//
+//            // Starting the service
+//            getActivity().startService(sensorServiceIntent);
+//
+//            // making stop button enabled
+//            enableButton(stopRecord);
+//        }
+    }
 
-                    return true; // true = close dialog
+    /**
+     * Invoke necessary bluetooth services for device to be discoverable and accept connections.
+     */
+    private void startBluetoothServices() {
+
+        // Getting Bluetooth Adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) {
+            FragmentActivity activity = getActivity();
+            Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            activity.finish();
+        }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+            // Otherwise, setup the chat session
+        }
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        switch (requestCode){
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK){
+                    // Bluetooth is now enabled, so set up Bluetooth Service
+                    setupBluetoothService();
+                } else{
+                    // User did not enable Bluetooth or an error occured
+                    Toast.makeText(getActivity(), "Bluetooth was not enabled. Leaving Application.",
+                            Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
                 }
-
-                @Override
-                public void onCancelClicked() {
-                    enableButton(startRecord);
-                    enableRadioGroup(captureSpeed);
-                }
-            };
-            dlg.show();
-        }else if(DATA_STORAGE_MODE == SEND_VIA_BLUETOOTH){
-            // Notify user
-            Toast.makeText(getActivity(), "Recording Data to be sent via bluetooth!!", Toast.LENGTH_SHORT).show();
-
-            // Making an intent
-            sensorServiceIntent = new Intent(getActivity(), SensorService.class);
-
-            // Starting the service
-            getActivity().startService(sensorServiceIntent);
-
-            // making stop button enabled
-            enableButton(stopRecord);
         }
     }
 
+    private void setupBluetoothService() {
 
+        // Initialize the bluetooth Service
+        mBluetoothService = new BluetoothService(getActivity(), mHandler);
 
+    }
 
 
     // When start Button is clicked
@@ -350,7 +401,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     }
 
     // When stop recording button is clicked
-    public void stopRecording(View view){
+    public void stopCapturing(View view){
 
         // Stopping the service
         SensorService.isContinued = false;
@@ -358,14 +409,14 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         // Notifying user
         Toast.makeText(getActivity(), "Recording Stopped!!", Toast.LENGTH_SHORT).show();
 
-        // Checking for Data Storage Mode
-        if(DATA_STORAGE_MODE == WRITE_TO_FILE){
-            // Writing stored data to file
-            writeToFile();
-        }else if(DATA_STORAGE_MODE == SEND_VIA_BLUETOOTH){
-            Intent bluetoothIntent = new Intent(getActivity(),MainActivity.class );
-            startActivity(bluetoothIntent);
-        }
+//        // Checking for Data Storage Mode
+//        if(DATA_STORAGE_MODE == WRITE_TO_FILE){
+//            // Writing stored data to file
+//            writeToFile();
+//        }else if(DATA_STORAGE_MODE == SEND_VIA_BLUETOOTH){
+//            Intent bluetoothIntent = new Intent(getActivity(),MainActivity.class );
+//            startActivity(bluetoothIntent);
+//        }
 
 //        // Free the memory
 //        masterDataTimestamp.clear();
@@ -406,7 +457,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         super.onPause();
         // Checking if recording is in progress
         if(!startRecord.isEnabled()){
-            stopRecording(stopRecord);
+            stopCapturing(stopRecord);
         }
     }
 

@@ -17,8 +17,8 @@
             android:id="@+id/app_header_text"
             android:textAlignment="center"
             android:gravity="center_horizontal"
-            android:textColor="@color/light_blue"
-            android:layout_weight="3" />
+            android:textColor="#804215"
+            android:layout_weight="0.72" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -38,7 +38,8 @@
                     android:id="@+id/textView"
                     android:textSize="20dp"
                     android:layout_gravity="left"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="#0d7b80" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -47,7 +48,8 @@
                     android:id="@+id/accelerometer_availability_status"
                     android:textSize="20dp"
                     android:layout_gravity="right"
-                    android:gravity="right" />
+                    android:gravity="right"
+                    android:textColor="#000000" />
             </LinearLayout>
 
             <LinearLayout
@@ -62,7 +64,8 @@
                     android:text="Gyroscope"
                     android:id="@+id/textView2"
                     android:textSize="20dp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="#0d7b80" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -70,7 +73,8 @@
                     android:text="Not Present"
                     android:id="@+id/gyroscope_availability_status"
                     android:textSize="20dp"
-                    android:gravity="right" />
+                    android:gravity="right"
+                    android:textColor="#000000" />
             </LinearLayout>
 
             <LinearLayout
@@ -86,7 +90,8 @@
                     android:id="@+id/textView3"
                     android:textSize="20dp"
                     android:layout_gravity="right"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="#0d7b80" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -94,7 +99,8 @@
                     android:text="Not Present"
                     android:id="@+id/magenetometer_availability_status"
                     android:textSize="20dp"
-                    android:gravity="right" />
+                    android:gravity="right"
+                    android:textColor="#000000" />
             </LinearLayout>
 
         </LinearLayout>
@@ -104,7 +110,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="4"
+            android:layout_weight="10"
             android:id="@+id/settings_linear_layout">
 
             <TextView
@@ -114,7 +120,8 @@
                 android:id="@+id/textView4"
                 android:textSize="25dp"
                 android:textStyle="bold|italic"
-                android:gravity="center_horizontal" />
+                android:gravity="center_horizontal"
+                android:textColor="#804215" />
 
             <RadioGroup
                 android:layout_width="match_parent"
@@ -138,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:text="Medium"
                     android:id="@+id/medium_record_radio_button"
-                    android:checked="false"
+                    android:checked="true"
                     android:layout_weight="1"
                     android:textSize="20dp" />
 
@@ -147,44 +154,6 @@
                     android:layout_height="wrap_content"
                     android:text="Normal"
                     android:id="@+id/normal_record_radio_button"
-                    android:checked="true"
-                    android:layout_weight="1"
-                    android:textSize="20dp" />
-            </RadioGroup>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Data Storage Mode"
-                android:id="@+id/textView5"
-                android:textSize="25dp"
-                android:textStyle="bold|italic"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="20dp" />
-
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_weight="0"
-                android:layout_marginTop="10dp"
-                android:id="@+id/data_storage_mode_radioGroup" >
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Write to File"
-                    android:id="@+id/write_to_file_radioButton"
-                    android:checked="true"
-                    android:layout_weight="1"
-                    android:textSize="20dp" />
-
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Send via Bluetooth"
-                    android:id="@+id/send_via_bluetooth_radioButton"
                     android:checked="false"
                     android:layout_weight="1"
                     android:textSize="20dp" />
