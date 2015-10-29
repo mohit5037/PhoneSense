@@ -6,17 +6,15 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.SystemClock;
+
+import com.probisticktechnologies.bluetoothchat.BluetoothService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.net.ssl.ManagerFactoryParameters;
 
 public class SensorService extends IntentService implements SensorEventListener {
 
@@ -152,6 +150,9 @@ public class SensorService extends IntentService implements SensorEventListener 
             PhoneSensorDataCaptureFragment.masterData.add(new ArrayList<Float>(Arrays.asList(temp)));
             PhoneSensorDataCaptureFragment.masterDataTimestamp.add((new Timestamp(event.timestamp)).getTime() / TIME_DIVIDE_CONSTANT);
 
+            // Send data via bluetooth
+            processAndSendData();
+
             // Making the values null
             for (Map.Entry entry: currentSensorValues.entrySet()){
                 currentSensorValues.put(entry.getKey().toString(), null);
@@ -183,6 +184,8 @@ public class SensorService extends IntentService implements SensorEventListener 
             PhoneSensorDataCaptureFragment.masterData.add(new ArrayList<Float>(Arrays.asList(temp)));
             PhoneSensorDataCaptureFragment.masterDataTimestamp.add((new Timestamp(event.timestamp)).getTime() / TIME_DIVIDE_CONSTANT);
 
+            processAndSendData();
+
             // Making the values null
             for (Map.Entry entry: currentSensorValues.entrySet()){
                 currentSensorValues.put(entry.getKey().toString(), null);
@@ -191,8 +194,45 @@ public class SensorService extends IntentService implements SensorEventListener 
 
     }
 
+    private void processAndSendData() {
+
+        String dataPacket = "";
+
+        dataPacket += Long.toString(PhoneSensorDataCaptureFragment.masterDataTimestamp.get(PhoneSensorDataCaptureFragment.masterDataTimestamp.size() -1));
+        dataPacket += ",";
+
+        for (Float f: PhoneSensorDataCaptureFragment.masterData.get(PhoneSensorDataCaptureFragment.masterData.size() -1)){
+            dataPacket += Float.toString(f);
+            dataPacket += ",";
+        }
+
+        dataPacket += "\n\n";
+
+        sendMessage(dataPacket);
+    }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    /**
+     * Sends a message
+     * @param message A string of text to send.
+     */
+    public void sendMessage(String message){
+        // Check that we're actually connected before trying anything
+        if(PhoneSensorDataCaptureFragment.bluetoothService.getState() != BluetoothService.STATE_CONNECTED){
+            //Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check that there is actually something to send
+        if(message.length() > 0){
+            // Get the message bytes
+            byte[] send = message.getBytes();
+            PhoneSensorDataCaptureFragment.bluetoothService.write(send);
+
+        }
     }
 }

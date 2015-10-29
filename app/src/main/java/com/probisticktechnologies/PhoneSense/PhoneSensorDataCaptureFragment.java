@@ -9,13 +9,16 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,10 +27,8 @@ import com.probisticktechnologies.bluetoothchat.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,9 @@ import java.util.Map;
 public class PhoneSensorDataCaptureFragment extends Fragment {
 
     private static final String TAG = "PhoneSensorDataCaptureFragment";
+
+    // Switch to control SPSD power
+    private Switch spsdPowerSwitch;
 
     // Declaring Buttons
     private Button startRecord;
@@ -82,11 +86,14 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     // Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter;
 
-    // Handler to communicate with Bluetooth Service
-    private Handler mHandler;
+    // Name of the connected device
+    private String mConnectedDeviceName = null;
 
     // Declaring bluetooth service object
-    private BluetoothService mBluetoothService;
+    public static BluetoothService bluetoothService = null;
+
+    // String Buffer for bluetooth messages
+    StringBuffer mOutStringBuffer;
 
     // Intent request codes
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
@@ -106,6 +113,11 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflating the view
@@ -121,6 +133,9 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         // Getting the Radio Group
         captureSpeed = (RadioGroup) rootView.findViewById(R.id.capture_speed_radio_group);
 
+        // Getting the Switch
+        spsdPowerSwitch = (Switch) rootView.findViewById(R.id.spsd_power_on_off_switch);
+
         // Checking whether any sensor is present in the device of not and notifying user acc
         if(deviceSensors.size()!= 0){
             if(deviceSensors.containsKey("Accelerometer")){
@@ -133,16 +148,6 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
                 ((TextView) rootView.findViewById(R.id.magenetometer_availability_status)).setText("Present");
             }
 
-            // Making the buttons clickable
-            enableButton(startRecord);
-            disableButton(stopRecord);
-
-        }
-        else{
-            Toast.makeText(getActivity(), "Sorry, No sensors available on your device!",
-                    Toast.LENGTH_SHORT).show();
-            disableButton(startRecord);
-            disableButton(stopRecord);
         }
 
         // Setting listeners on buttons
@@ -160,7 +165,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //v.setFocusableInTouchMode(false);
-                disableButton(stopRecord);
+                //disableButton(stopRecord);
                 stopCapturing(v);
             }
         });
@@ -184,6 +189,35 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
                 }
             }
         });
+
+        // Setting listener on power switch
+        spsdPowerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    // Enable the required components
+                    enableRadioGroup(captureSpeed);
+                    enableButton(startRecord);
+                    disableButton(stopRecord);
+                    if(bluetoothService!=null){
+                        bluetoothService.start();
+                    }else {
+                        // Starting Bluetooth Services
+                        enableBluetoothServices();
+                    }
+
+                }else{
+                    stopCapturing(stopRecord);
+                    stopBluetoothService();
+                    disableButton(startRecord);
+                    disableRadioGroup(captureSpeed);
+                }
+            }
+        });
+
+        disableRadioGroup(captureSpeed);
+        disableButton(startRecord);
+        disableButton(stopRecord);
 
         return rootView;
     }
@@ -226,7 +260,6 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
                 deviceSensors.put(sensorName, sensorManager.getDefaultSensor(sensorId));
             }
         }
-
     }
 
     /**
@@ -235,12 +268,17 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     private void startCapturing() {
 
         // Make sure that bluetooth services are up and running
-        startBluetoothServices();
+        // enableBluetoothServices();
 
-        // Setup Bluetooth Service if not already done
-        if(mBluetoothService == null){
-            setupBluetoothService();
+
+
+        // Checking if bluetooth service is already running or not
+        if(bluetoothService.getState() == BluetoothService.STATE_CONNECTED) {
+            sendSensorData();
         }
+
+        // Making stop button enabled
+        enableButton(stopRecord);
 
 
 
@@ -288,10 +326,18 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
 //        }
     }
 
+    private void stopBluetoothService(){
+
+        if(bluetoothService!=null) {
+            // Stopping the bluetooth Services
+            bluetoothService.stop();
+        }
+    }
+
     /**
      * Invoke necessary bluetooth services for device to be discoverable and accept connections.
      */
-    private void startBluetoothServices() {
+    private void enableBluetoothServices() {
 
         // Getting Bluetooth Adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -306,7 +352,12 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            // Otherwise, setup the chat session
+        }else {
+            if(bluetoothService == null){
+                setupBluetoothService();
+            }else {
+                bluetoothService.start();
+            }
         }
 
     }
@@ -317,7 +368,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
                 // When the request to enable Bluetooth returns
                 if (resultCode == Activity.RESULT_OK){
                     // Bluetooth is now enabled, so set up Bluetooth Service
-                    setupBluetoothService();
+                     setupBluetoothService();
                 } else{
                     // User did not enable Bluetooth or an error occured
                     Toast.makeText(getActivity(), "Bluetooth was not enabled. Leaving Application.",
@@ -330,9 +381,65 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     private void setupBluetoothService() {
 
         // Initialize the bluetooth Service
-        mBluetoothService = new BluetoothService(getActivity(), mHandler);
+        bluetoothService = new BluetoothService(getActivity(), mHandler);
 
+        // Initialize the buffer for outgoing message
+        mOutStringBuffer = new StringBuffer("");
+
+        bluetoothService.start();
     }
+
+
+    private void sendSensorData(){
+
+        // Making an intent
+        sensorServiceIntent = new Intent(getActivity(), SensorService.class);
+
+        // Starting the service
+        getActivity().startService(sensorServiceIntent);
+    }
+
+
+    /**
+     * The Handler that gets information back from the BluetoothChatService
+     */
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            FragmentActivity activity = getActivity();
+            switch (msg.what){
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1){
+                        case BluetoothService.STATE_CONNECTED:
+                            //setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                            //Toast.makeText(activity, "Data Transfer Begins Now!!", Toast.LENGTH_SHORT).show();
+                            //sendSensorData();
+                            break;
+                        case BluetoothService.STATE_LISTEN:
+                        case BluetoothService.STATE_NONE:
+                            //setStatus(R.string.not_connected);
+                    }
+                    break;
+                case Constants.MESSAGE_WRITE:
+                    break;
+                case Constants.MESSAGE_READ:
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    if(null != activity){
+                        Toast.makeText(activity, "Connected to "
+                        + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case Constants.MESSAGE_TOAST:
+                    if(null != activity){
+                        Toast.makeText(activity, msg.getData().getString(Constants.TOAST),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+            }
+        }
+    };
 
 
     // When start Button is clicked
@@ -403,11 +510,15 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     // When stop recording button is clicked
     public void stopCapturing(View view){
 
-        // Stopping the service
-        SensorService.isContinued = false;
+        if((!startRecord.isEnabled()) && stopRecord.isEnabled()) {
+            // Stopping the service
+            SensorService.isContinued = false;
 
-        // Notifying user
-        Toast.makeText(getActivity(), "Recording Stopped!!", Toast.LENGTH_SHORT).show();
+            // Stopping the bluetooth service
+            // bluetoothService.stop();
+
+            // Notifying user
+            Toast.makeText(getActivity(), "Recording Stopped!!", Toast.LENGTH_SHORT).show();
 
 //        // Checking for Data Storage Mode
 //        if(DATA_STORAGE_MODE == WRITE_TO_FILE){
@@ -423,10 +534,11 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
 //        masterData.clear();
 
 
-        // Changing buttons config
-        enableButton(startRecord);
-        enableRadioGroup(captureSpeed);
-        disableButton(stopRecord);
+            // Changing buttons config
+            enableButton(startRecord);
+            enableRadioGroup(captureSpeed);
+            disableButton(stopRecord);
+        }
     }
 
     private void enableRadioGroup(RadioGroup captureSpeed) {
@@ -469,6 +581,9 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (bluetoothService != null){
+            bluetoothService.stop();
+        }
     }
 }
 

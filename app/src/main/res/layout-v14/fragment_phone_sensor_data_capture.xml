@@ -133,18 +133,9 @@
                 <Switch
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/switch1"
+                    android:id="@+id/spsd_power_on_off_switch"
                     android:checked="false"
-                    android:layout_weight="1.5"
-                    android:switchMinWidth="50sp"
-                    android:thumbTint="#23801a"
-                    android:trackTint="#23801a"
-                    android:thumbTintMode="src_over"
-                    android:text="Off/On"
-                    android:textSize="20dp"
-                    android:textStyle="italic"
-                    android:textColor="#7673c9"
-                    android:textAlignment="viewStart" />
+                    android:layout_weight="1.5" />
             </LinearLayout>
 
             <LinearLayout
@@ -170,7 +161,7 @@
                     android:layout_weight="0"
                     android:layout_marginTop="10dp"
                     android:id="@+id/capture_speed_radio_group">
-
+    
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -179,7 +170,7 @@
                         android:checked="false"
                         android:layout_weight="1"
                         android:textSize="20dp" />
-
+    
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -188,7 +179,7 @@
                         android:checked="true"
                         android:layout_weight="1"
                         android:textSize="20dp" />
-
+    
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -229,4 +220,3 @@
     </LinearLayout>
 
 </FrameLayout>
-<!-- From: file:/C:/PST/Test/PhoneSense/app/src/main/res/layout/fragment_phone_sensor_data_capture.xml -->

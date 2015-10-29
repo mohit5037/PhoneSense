@@ -113,51 +113,92 @@
             android:layout_weight="10"
             android:id="@+id/settings_linear_layout">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Capture Speed"
-                android:id="@+id/textView4"
-                android:textSize="25dp"
-                android:textStyle="bold|italic"
-                android:gravity="center_horizontal"
-                android:textColor="#804215" />
-
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <LinearLayout
                 android:orientation="horizontal"
-                android:layout_weight="0"
-                android:layout_marginTop="10dp"
-                android:id="@+id/capture_speed_radio_group">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2">
 
-                <RadioButton
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fastest"
-                    android:id="@+id/fast_record_radio_button"
+                    android:text="SPSD Power"
+                    android:id="@+id/SPSD_Power_Header"
+                    android:textSize="25dp"
+                    android:textStyle="bold|italic"
+                    android:gravity="left|center_horizontal"
+                    android:textColor="#804215"
+                    android:layout_weight="2" />
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/switch1"
                     android:checked="false"
-                    android:layout_weight="1"
-                    android:textSize="20dp" />
+                    android:layout_weight="1.5"
+                    android:switchMinWidth="50sp"
+                    android:thumbTint="#23801a"
+                    android:trackTint="#23801a"
+                    android:thumbTintMode="src_over"
+                    android:text="Off/On"
+                    android:textSize="20dp"
+                    android:textStyle="italic"
+                    android:textColor="#7673c9"
+                    android:textAlignment="viewStart" />
+            </LinearLayout>
 
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Medium"
-                    android:id="@+id/medium_record_radio_button"
-                    android:checked="true"
-                    android:layout_weight="1"
-                    android:textSize="20dp" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
-                <RadioButton
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Normal"
-                    android:id="@+id/normal_record_radio_button"
-                    android:checked="false"
-                    android:layout_weight="1"
-                    android:textSize="20dp" />
-            </RadioGroup>
+                    android:text="Capture Speed"
+                    android:id="@+id/Capture_Speed_Header"
+                    android:textSize="25dp"
+                    android:textStyle="bold|italic"
+                    android:gravity="center_horizontal"
+                    android:textColor="#804215" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_weight="0"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/capture_speed_radio_group">
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fastest"
+                        android:id="@+id/fast_record_radio_button"
+                        android:checked="false"
+                        android:layout_weight="1"
+                        android:textSize="20dp" />
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Medium"
+                        android:id="@+id/medium_record_radio_button"
+                        android:checked="true"
+                        android:layout_weight="1"
+                        android:textSize="20dp" />
+
+                    <RadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Normal"
+                        android:id="@+id/normal_record_radio_button"
+                        android:checked="false"
+                        android:layout_weight="1"
+                        android:textSize="20dp" />
+                </RadioGroup>
+            </LinearLayout>
 
 
         </LinearLayout>
