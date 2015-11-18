@@ -1479,25 +1479,26 @@ containing a value of this type.
         public static final int app_name=0x7f050012;
         public static final int bt_not_enabled_leaving=0x7f050013;
         public static final int button_scan=0x7f050014;
-        public static final int discoverable=0x7f050015;
-        public static final int hello_world=0x7f050016;
-        public static final int insecure_connect=0x7f050017;
-        public static final int intro_message=0x7f050018;
-        public static final int none_found=0x7f050019;
-        public static final int none_paired=0x7f05001a;
-        public static final int not_connected=0x7f05001b;
-        public static final int sample_hide_log=0x7f05001c;
-        public static final int sample_show_log=0x7f05001d;
-        public static final int scanning=0x7f05001e;
-        public static final int secure_connect=0x7f05001f;
-        public static final int select_device=0x7f050020;
-        public static final int send=0x7f050021;
-        public static final int title_activity_home_screen=0x7f050022;
-        public static final int title_connected_to=0x7f050023;
-        public static final int title_connecting=0x7f050024;
-        public static final int title_not_connected=0x7f050025;
-        public static final int title_other_devices=0x7f050026;
-        public static final int title_paired_devices=0x7f050027;
+        public static final int data_storage_directory=0x7f050015;
+        public static final int discoverable=0x7f050016;
+        public static final int hello_world=0x7f050017;
+        public static final int insecure_connect=0x7f050018;
+        public static final int intro_message=0x7f050019;
+        public static final int none_found=0x7f05001a;
+        public static final int none_paired=0x7f05001b;
+        public static final int not_connected=0x7f05001c;
+        public static final int sample_hide_log=0x7f05001d;
+        public static final int sample_show_log=0x7f05001e;
+        public static final int scanning=0x7f05001f;
+        public static final int secure_connect=0x7f050020;
+        public static final int select_device=0x7f050021;
+        public static final int send=0x7f050022;
+        public static final int title_activity_home_screen=0x7f050023;
+        public static final int title_connected_to=0x7f050024;
+        public static final int title_connecting=0x7f050025;
+        public static final int title_not_connected=0x7f050026;
+        public static final int title_other_devices=0x7f050027;
+        public static final int title_paired_devices=0x7f050028;
     }
     public static final class style {
         /**  Customize your theme here. 

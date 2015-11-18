@@ -206,7 +206,7 @@ public class SensorService extends IntentService implements SensorEventListener 
             dataPacket += ",";
         }
 
-        dataPacket += "\n\n";
+        dataPacket += "\n";
 
         sendMessage(dataPacket);
     }

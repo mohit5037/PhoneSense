@@ -39,6 +39,7 @@ import java.util.Map;
  */
 public class PhoneSensorDataCaptureFragment extends Fragment {
 
+    // Tag for logging purposes
     private static final String TAG = "PhoneSensorDataCaptureFragment";
 
     // Switch to control SPSD power
@@ -56,7 +57,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
 
     // File in which data is to be stored
     private String FILENAME;
-    private final String dirName = "PhoneSense";
+//    private final String dirName = getString(R.string.data_storage_directory);
 
     // Data Structure to hold headings to be written to file
     List<String> headings = Arrays.asList("Timestamp",
@@ -96,7 +97,6 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     StringBuffer mOutStringBuffer;
 
     // Intent request codes
-    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_ENABLE_BT = 3;
 
     // Declaring data structures to hold data for whole session
@@ -136,7 +136,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         // Getting the Switch
         spsdPowerSwitch = (Switch) rootView.findViewById(R.id.spsd_power_on_off_switch);
 
-        // Checking whether any sensor is present in the device of not and notifying user acc
+        // Updating the status of sensors present on device
         if(deviceSensors.size()!= 0){
             if(deviceSensors.containsKey("Accelerometer")){
                 ((TextView) rootView.findViewById(R.id.accelerometer_availability_status)).setText("Present");
@@ -215,6 +215,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
             }
         });
 
+        // Initializing initial status of buttons and radio groups
         disableRadioGroup(captureSpeed);
         disableButton(startRecord);
         disableButton(stopRecord);
@@ -267,12 +268,7 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
      */
     private void startCapturing() {
 
-        // Make sure that bluetooth services are up and running
-        // enableBluetoothServices();
-
-
-
-        // Checking if bluetooth service is already running or not
+        // Only start sensor service when bluetooth connection is established
         if(bluetoothService.getState() == BluetoothService.STATE_CONNECTED) {
             sendSensorData();
         }
@@ -326,6 +322,9 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
 //        }
     }
 
+    /**
+     * This method stops the bluetooth service when the spsd is turned off.
+     */
     private void stopBluetoothService(){
 
         if(bluetoothService!=null) {
@@ -362,6 +361,12 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
 
     }
 
+    /**
+     * Method to check result of activities launched.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         switch (requestCode){
             case REQUEST_ENABLE_BT:
@@ -378,6 +383,9 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         }
     }
 
+    /**
+     * This method initializes the bluetooth service object and output buffer to send messages.
+     */
     private void setupBluetoothService() {
 
         // Initialize the bluetooth Service
@@ -389,7 +397,9 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         bluetoothService.start();
     }
 
-
+    /**
+     * This method starts the sensor service which sends the data via bluetooth.
+     */
     private void sendSensorData(){
 
         // Making an intent
@@ -442,105 +452,104 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
     };
 
 
-    // When start Button is clicked
-    public  void writeToFile(){
+//    // When start Button is clicked
+//    public  void writeToFile(){
+//
+//        // Checking if External Storage is available or not
+//        if(isExternalStorageWritable() == false){
+//            Toast.makeText(getActivity(),"External Storage Not Available!!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        // Creating Directory Path
+//        File myFilesDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+//                + File.separator + dirName);
+//
+//        // Checking if it exists or not
+//        if(!myFilesDir.exists()){
+//            myFilesDir.mkdirs();
+//        }
+//
+//        // Creating new file
+//        String root = Environment.getExternalStorageDirectory().toString() + File.separator + dirName;
+//        File dataFile = new File(root, FILENAME);
+//        if(dataFile.exists()){
+//            dataFile.delete();
+//        }
+//        try{
+//            // Opening output Stream
+//            FileOutputStream fos = new FileOutputStream(dataFile);
+//            StringBuilder sb = new StringBuilder();
+//
+//            // Writing Headings
+//            for(String heading: headings){
+//                sb.append(heading);
+//                sb.append(',');
+//            }
+//            sb.delete(sb.length()-1, sb.length());
+//            sb.append('\n');
+//            fos.write(sb.toString().getBytes());
+//            sb.setLength(0);
+//
+//            // Writing data rows
+//            for(int i=0; i<masterData.size(); i++){
+//                // Appending time stamp
+//                sb.append(masterDataTimestamp.get(i));
+//                sb.append(',');
+//                for(Float value: masterData.get(i)){
+//                    sb.append(value);
+//                    sb.append(',');
+//                }
+//                sb.delete(sb.length()-1, sb.length());
+//                sb.append('\n');
+//                fos.write(sb.toString().getBytes());
+//                sb.setLength(0);
+//            }
+//
+//            // Closing file and notifying user
+//            fos.flush();
+//            fos.close();
+//
+//            Toast.makeText(getActivity(), "Data Written to " + dirName + File.separator + FILENAME, Toast.LENGTH_LONG).show();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
+//    }
 
-        // Checking if External Storage is available or not
-        if(isExternalStorageWritable() == false){
-            Toast.makeText(getActivity(),"External Storage Not Available!!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Creating Directory Path
-        File myFilesDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                + File.separator + dirName);
-
-        // Checking if it exists or not
-        if(!myFilesDir.exists()){
-            myFilesDir.mkdirs();
-        }
-
-        // Creating new file
-        String root = Environment.getExternalStorageDirectory().toString() + File.separator + dirName;
-        File dataFile = new File(root, FILENAME);
-        if(dataFile.exists()){
-            dataFile.delete();
-        }
-        try{
-            // Opening output Stream
-            FileOutputStream fos = new FileOutputStream(dataFile);
-            StringBuilder sb = new StringBuilder();
-
-            // Writing Headings
-            for(String heading: headings){
-                sb.append(heading);
-                sb.append(',');
-            }
-            sb.delete(sb.length()-1, sb.length());
-            sb.append('\n');
-            fos.write(sb.toString().getBytes());
-            sb.setLength(0);
-
-            // Writing data rows
-            for(int i=0; i<masterData.size(); i++){
-                // Appending time stamp
-                sb.append(masterDataTimestamp.get(i));
-                sb.append(',');
-                for(Float value: masterData.get(i)){
-                    sb.append(value);
-                    sb.append(',');
-                }
-                sb.delete(sb.length()-1, sb.length());
-                sb.append('\n');
-                fos.write(sb.toString().getBytes());
-                sb.setLength(0);
-            }
-
-            // Closing file and notifying user
-            fos.flush();
-            fos.close();
-
-            Toast.makeText(getActivity(), "Data Written to " + dirName + File.separator + FILENAME, Toast.LENGTH_LONG).show();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-    }
-
-    // When stop recording button is clicked
+    /**
+     *
+     * This method stops the sensor service when the stop button is pressed.
+     * @param view
+     */
     public void stopCapturing(View view){
 
+        // First check if recording is actually in progress or not.
         if((!startRecord.isEnabled()) && stopRecord.isEnabled()) {
-            // Stopping the service
-            SensorService.isContinued = false;
 
-            // Stopping the bluetooth service
-            // bluetoothService.stop();
+            // Setting the sensor service flag to false
+            SensorService.isContinued = false;
 
             // Notifying user
             Toast.makeText(getActivity(), "Recording Stopped!!", Toast.LENGTH_SHORT).show();
 
-//        // Checking for Data Storage Mode
-//        if(DATA_STORAGE_MODE == WRITE_TO_FILE){
-//            // Writing stored data to file
-//            writeToFile();
-//        }else if(DATA_STORAGE_MODE == SEND_VIA_BLUETOOTH){
-//            Intent bluetoothIntent = new Intent(getActivity(),MainActivity.class );
-//            startActivity(bluetoothIntent);
-//        }
 
 //        // Free the memory
 //        masterDataTimestamp.clear();
 //        masterData.clear();
 
 
-            // Changing buttons config
+            // Changing buttons config (enabling start button to record again)
             enableButton(startRecord);
             enableRadioGroup(captureSpeed);
             disableButton(stopRecord);
         }
     }
 
+    /**
+     * Enables the radio group and its child elements.
+     * @param captureSpeed
+     */
     private void enableRadioGroup(RadioGroup captureSpeed) {
 
         for (int i = 0; i < captureSpeed.getChildCount(); i++) {
@@ -548,6 +557,10 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         }
     }
 
+    /**
+     * Disables the radio group and its child elements.
+     * @param captureSpeed
+     */
     private void disableRadioGroup(RadioGroup captureSpeed) {
 
         for (int i = 0; i < captureSpeed.getChildCount(); i++) {
@@ -555,7 +568,10 @@ public class PhoneSensorDataCaptureFragment extends Fragment {
         }
     }
 
-    /* Checks if external storage is available for read and write */
+    /**
+     * Checks if external storage is available to read or write.
+     * @return
+     */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
